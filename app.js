@@ -209,6 +209,15 @@ function setup(){
  if(localStorage.getItem("spend_analyser_dark")==="true")document.body.classList.add("dark");
  render();
  if(window.google?.accounts?.oauth2)initGoogle();
+ else {
+   let tries=0;
+   const waitForGoogle=()=>{
+     if(window.google?.accounts?.oauth2){initGoogle();return}
+     if(tries++<100)setTimeout(waitForGoogle,100);
+     else setSyncStatus("Google sign-in could not be loaded. Refresh the page and try again.","error");
+   };
+   waitForGoogle();
+ }
 }
 function nav(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("active",s.id===id));document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.nav===id));window.scrollTo({top:0,behavior:"smooth"})}
 function exportCSV(){
