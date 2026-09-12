@@ -82,20 +82,46 @@ function renderCategories(){
 }
 
 function initGoogle(){
- if(!window.google?.accounts?.oauth2){setSyncStatus("Google sign-in is unavailable right now.","error");return}
- tokenClient=google.accounts.oauth2.initTokenClient({client_id:GOOGLE_CLIENT_ID,scope:GOOGLE_SCOPE,callback:()=>{}});
- $("connectGoogle").onclick=connectGoogle;
- $("disconnectGoogle").onclick=disconnectGoogle;
- if(spreadsheetId)setSyncStatus("Google Sheet remembered. Connect to sync.");
+ if(tokenClient)return true;
+ if(!window.google || !window.google.accounts || !window.google.accounts.oauth2){
+   setSyncStatus("Google sign-in could not be loaded. Refresh the page and try again.","error");
+   return false;
+ }
+ try{
+   tokenClient=window.google.accounts.oauth2.initTokenClient({
+     client_id:GOOGLE_CLIENT_ID,
+     scope:GOOGLE_SCOPE,
+     include_granted_scopes:true,
+     callback:()=>{}
+   });
+   $("connectGoogle").onclick=connectGoogle;
+   $("disconnectGoogle").onclick=disconnectGoogle;
+   if(spreadsheetId)setSyncStatus("Google Sheet remembered. Connect to sync.");
+   return true;
+ }catch(err){
+   console.error("Google OAuth initialization failed",err);
+   setSyncStatus("Google sign-in could not be initialized. Refresh the page and try again.","error");
+   return false;
+ }
 }
 function getToken(prompt="consent"){
  return new Promise((resolve,reject)=>{
-   if(!tokenClient)return reject(new Error("Google sign-in is not ready yet."));
+   if(!tokenClient && !initGoogle()){
+     reject(new Error("Google sign-in is not available. Refresh the page and try again."));
+     return;
+   }
    tokenClient.callback=(response)=>{
+     if(!response){reject(new Error("No response from Google."));return}
      if(response.error){reject(new Error(response.error_description||response.error));return}
-     googleToken=response.access_token;resolve(googleToken);
+     if(!response.access_token){reject(new Error("Google did not return an access token."));return}
+     googleToken=response.access_token;
+     resolve(googleToken);
    };
-   tokenClient.requestAccessToken({prompt});
+   try{
+     tokenClient.requestAccessToken({prompt});
+   }catch(err){
+     reject(err);
+   }
  });
 }
 async function connectGoogle(){
@@ -208,15 +234,15 @@ function setup(){
  $("themeBtn").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("spend_analyser_dark",document.body.classList.contains("dark"))};
  if(localStorage.getItem("spend_analyser_dark")==="true")document.body.classList.add("dark");
  render();
- if(window.google?.accounts?.oauth2)initGoogle();
- else {
+ if(!initGoogle()){
+   // The Google Identity Services script is loaded synchronously in index.html.
+   // A short retry also handles browsers/extensions that delay external scripts.
    let tries=0;
    const waitForGoogle=()=>{
-     if(window.google?.accounts?.oauth2){initGoogle();return}
-     if(tries++<100)setTimeout(waitForGoogle,100);
-     else setSyncStatus("Google sign-in could not be loaded. Refresh the page and try again.","error");
+     if(initGoogle())return;
+     if(tries++<20)setTimeout(waitForGoogle,250);
    };
-   waitForGoogle();
+   setTimeout(waitForGoogle,250);
  }
 }
 function nav(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("active",s.id===id));document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.nav===id));window.scrollTo({top:0,behavior:"smooth"})}

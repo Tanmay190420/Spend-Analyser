@@ -2,28 +2,19 @@
 
 Personal PWA for daily expense tracking and monthly analysis.
 
-## Current features
-- Add daily expenses in INR
-- Categories and payment methods
-- Monthly total, budget progress and transaction count
-- 7-day spending chart
-- Category analytics and month comparison
-- Searchable expense history
-- CSV export
-- Dark mode
-- Offline/local browser copy
-- Google Drive sync using Google OAuth + Google Sheets API
+## Google Drive sync
 
-## Google setup
-The web app uses Google Identity Services in the browser. It requests only:
-`https://www.googleapis.com/auth/drive.file`
+The app uses Google Identity Services in the browser and the Google Sheets/Drive APIs. It stores data in a spreadsheet named **Spend Analyser Data** in the signed-in user's Google Drive.
 
-This is the recommended narrow, non-sensitive Drive scope for creating and managing files used by the app. No client secret or service-account key is included in the browser code.
+OAuth client ID is public browser configuration; no client secret is stored in this repository.
 
-The app creates/uses a spreadsheet named **Spend Analyser Data** in the user's Google Drive and keeps an `Expenses` sheet plus a `Settings` sheet.
+Required Google Cloud APIs:
+- Google Sheets API
+- Google Drive API
 
-## Deployment
-The app is designed for GitHub Pages. Add the GitHub Pages origin to the OAuth client's **Authorized JavaScript origins**. No redirect URI is required for the popup/token flow used here.
+OAuth:
+- Application type: Web application
+- Authorized JavaScript origin: `https://tanmay190420.github.io`
+- Redirect URIs: not required for the popup token flow used by this app.
 
-## Important
-The repository can be public because it contains no private credentials. The Google OAuth client ID is intended to be used in browser code. Never add a Google client secret, service-account private key, or access token to this repository.
+The app requests `https://www.googleapis.com/auth/drive.file`, so it can work with files created/used by Spend Analyser rather than requesting full Drive access.
