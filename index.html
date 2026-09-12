@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<meta name="description" content="Simple personal daily expense tracker with monthly analysis.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg">
+<title>Spend Analyser</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+<header class="topbar">
+  <div>
+    <div id="dateLabel" class="eyebrow"></div>
+    <h1>Spend Analyser</h1>
+  </div>
+  <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">◐</button>
+</header>
+
+<main>
+<section id="home" class="screen active">
+  <div class="hero card">
+    <span>This Month</span>
+    <strong id="monthTotal">₹0</strong>
+    <div class="progress"><i id="budgetProgress"></i></div>
+    <div class="muted" id="budgetText">No monthly budget set</div>
+  </div>
+  <div class="stats">
+    <div class="card stat"><span>Today</span><strong id="todayTotal">₹0</strong></div>
+    <div class="card stat"><span>Transactions</span><strong id="txCount">0</strong></div>
+  </div>
+  <div class="card">
+    <div class="section-title"><h2>Last 7 Days</h2></div>
+    <div id="weekChart" class="bars"></div>
+  </div>
+  <div class="card">
+    <div class="section-title"><h2>Recent Expenses</h2><button class="text-btn" data-nav="expenses">See all</button></div>
+    <div id="recentList"></div>
+  </div>
+  <button class="fab" id="addHome">＋ <span>Add Expense</span></button>
+</section>
+
+<section id="expenses" class="screen">
+  <div class="screen-head"><h2>Expenses</h2><button class="primary small" id="addExpenses">＋ Add</button></div>
+  <input id="search" class="input" placeholder="Search expenses...">
+  <div id="expenseList"></div>
+</section>
+
+<section id="analytics" class="screen">
+  <div class="screen-head"><h2>Analytics</h2></div>
+  <div class="card">
+    <div class="eyebrow" id="analyticsMonth"></div>
+    <div class="big-number" id="analyticsTotal">₹0</div>
+    <div class="muted" id="monthComparison"></div>
+  </div>
+  <div class="card">
+    <h2>Category Breakdown</h2>
+    <div id="categoryChart" class="donut-wrap"></div>
+    <div id="categoryList"></div>
+  </div>
+  <div class="card">
+    <h2>Insights</h2>
+    <div id="insights" class="insights"></div>
+  </div>
+</section>
+
+<section id="settings" class="screen">
+  <div class="screen-head"><h2>Settings</h2></div>
+  <div class="card form-card">
+    <label>Monthly Budget</label>
+    <input id="budgetInput" class="input" type="number" min="0" step="100" placeholder="e.g. 40000">
+    <button class="primary" id="saveBudget">Save Budget</button>
+  </div>
+  <div class="card">
+    <h2>Data</h2>
+    <div class="settings-row"><button class="secondary" id="exportBtn">Export CSV</button><button class="secondary" id="clearBtn">Clear All</button></div>
+  </div>
+  <div class="card muted">Spend Analyser stores your expenses locally in this browser. No account or server is required.</div>
+</section>
+</main>
+
+<nav class="tabbar">
+  <button class="tab active" data-nav="home">⌂<span>Home</span></button>
+  <button class="tab" data-nav="expenses">☷<span>Expenses</span></button>
+  <button class="tab" data-nav="analytics">◔<span>Analytics</span></button>
+  <button class="tab" data-nav="settings">⚙<span>Settings</span></button>
+</nav>
+</div>
+
+<div class="modal hidden" id="expenseModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2>Add Expense</h2><button class="icon-btn" id="closeModal">×</button></div>
+    <form id="expenseForm">
+      <input id="amount" class="amount-input" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="₹ 0" required>
+      <label>Category</label>
+      <div id="categoryGrid" class="category-grid"></div>
+      <label>Note <small>(optional)</small></label>
+      <input id="note" class="input" placeholder="e.g. Lunch">
+      <label>Payment Method</label>
+      <select id="payment" class="input"></select>
+      <label>Date</label>
+      <input id="expenseDate" class="input" type="datetime-local">
+      <button class="primary save" type="submit">Save Expense</button>
+    </form>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
