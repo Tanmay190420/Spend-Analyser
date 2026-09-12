@@ -9,6 +9,7 @@
 <link rel="icon" href="icon.svg">
 <title>Spend Analyser</title>
 <link rel="stylesheet" href="style.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 <div id="app">
@@ -75,10 +76,19 @@
     <button class="primary" id="saveBudget">Save Budget</button>
   </div>
   <div class="card">
+    <div class="section-title"><h2>Google Drive Sync</h2></div>
+    <p class="muted">Your expense data is stored in a Google Sheet in your Google Drive. The app only requests access to files used by Spend Analyser.</p>
+    <div class="settings-row">
+      <button class="primary" id="connectGoogle">Connect Google Drive</button>
+      <button class="secondary hidden" id="disconnectGoogle">Disconnect</button>
+    </div>
+    <div id="syncStatus" class="muted sync-status">Not connected</div>
+  </div>
+  <div class="card">
     <h2>Data</h2>
     <div class="settings-row"><button class="secondary" id="exportBtn">Export CSV</button><button class="secondary" id="clearBtn">Clear All</button></div>
   </div>
-  <div class="card muted">Spend Analyser stores your expenses locally in this browser. No account or server is required.</div>
+  <div class="card muted">Spend Analyser keeps a local copy for offline use. When Google Drive is connected, changes are synced to your private Google Sheet.</div>
 </section>
 </main>
 

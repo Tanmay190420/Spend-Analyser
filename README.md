@@ -1,46 +1,29 @@
-# Spend Analyser — PWA
+# Spend Analyser
 
-Personal expense tracking and monthly analysis PWA.
+Personal PWA for daily expense tracking and monthly analysis.
 
-## Current prototype
-- Daily expense entry
-- INR (₹)
+## Current features
+- Add daily expenses in INR
 - Categories and payment methods
-- Dashboard
+- Monthly total, budget progress and transaction count
 - 7-day spending chart
-- Expense history and search
-- Monthly category analytics
-- Month-over-month comparison
-- Monthly budget
+- Category analytics and month comparison
+- Searchable expense history
 - CSV export
 - Dark mode
-- Local storage fallback
+- Offline/local browser copy
+- Google Drive sync using Google OAuth + Google Sheets API
 
-## Planned online sync architecture
-Spend Analyser will be deployed over HTTPS and use Google authentication with a Google Sheet stored in the user's Google Drive as the cloud data store.
+## Google setup
+The web app uses Google Identity Services in the browser. It requests only:
+`https://www.googleapis.com/auth/drive.file`
 
-Target flow:
-PWA → Google Sign-In/OAuth → Google Sheets API → user's Google Drive
+This is the recommended narrow, non-sensitive Drive scope for creating and managing files used by the app. No client secret or service-account key is included in the browser code.
 
-The Google Sheet will contain expense records such as:
-Date, Amount, Category, Note, Payment Method, ID, Created At.
-
-The app should:
-1. Sign the user in with Google.
-2. Locate/create a dedicated Spend Analyser spreadsheet in the user's Drive.
-3. Read expenses from the sheet.
-4. Write new expenses to the sheet.
-5. Update/delete expense rows when edited/deleted.
-6. Cache recent data locally for a fast UI/offline resilience.
-7. Sync changes when connectivity returns.
-8. Never expose a Google API secret in browser code.
+The app creates/uses a spreadsheet named **Spend Analyser Data** in the user's Google Drive and keeps an `Expenses` sheet plus a `Settings` sheet.
 
 ## Deployment
-The PWA requires HTTPS for service-worker installation and production Google OAuth redirect flows.
-
-The next implementation phase should configure a Google Cloud project, enable Google Sheets API and Google Drive API, create OAuth credentials for a web app, and add the authorized production origin/redirect URI.
-
-For a simple personal app, use the minimum OAuth scopes needed. Prefer a dedicated spreadsheet created by the app and restrict access to the signed-in user's Drive.
+The app is designed for GitHub Pages. Add the GitHub Pages origin to the OAuth client's **Authorized JavaScript origins**. No redirect URI is required for the popup/token flow used here.
 
 ## Important
-Do not put a Google service-account private key or other secret in the PWA JavaScript. Browser apps must use OAuth authorization.
+The repository can be public because it contains no private credentials. The Google OAuth client ID is intended to be used in browser code. Never add a Google client secret, service-account private key, or access token to this repository.
